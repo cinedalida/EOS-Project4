@@ -1,0 +1,6 @@
+Automation needs:
+- to look for SUBMIT button after 10 questions
+- needs to rerun every after accomplishment messeges (weird)
+
+Typeform:
+- adjust the Q2 to multiple choice for errors

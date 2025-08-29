@@ -1,3 +1,8 @@
+console.log("Text inputs:", document.querySelectorAll('input[type="text"]'));
+console.log("Textareas:", document.querySelectorAll("textarea"));
+console.log("Rating buttons:", document.querySelectorAll("button"));
+console.log("All buttons:", document.querySelectorAll("button"));
+
 function getRandomSprintName() {
   const sprints = [
     "Sprint 2025-Q1-Jan-Mar",
