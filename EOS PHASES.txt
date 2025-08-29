@@ -4,6 +4,8 @@ Step 1.1: Create Your Typeform Survey
  Go to Typeform.com and create the survey using the questions I provided earlier
  Test the survey manually (submit 1-2 responses yourself)
  Note your Form ID from the URL: typeform.com/to/YOUR_FORM_ID
+ 
+ (Link: https://form.typeform.com/to/mBV59eh0)
 
 Step 1.2: Generate Dummy Data via Browser Automation
 

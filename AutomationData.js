@@ -1,11 +1,9 @@
 function getRandomSprintName() {
   const sprints = [
-    "Sprint 2024-Q1-Week1",
-    "Sprint 2024-Q1-Week2",
-    "Sprint 2024-Q1-Week3",
-    "Sprint 2024-Q1-Week4",
-    "Sprint 2024-Q2-Week1",
-    "Sprint 2024-Q2-Week2",
+    "Sprint 2025-Q1-Jan-Mar",
+    "Sprint 2025-Q2-Apr-Jun",
+    "Sprint 2025-Q3-Jul-Sep",
+    "Sprint 2025-Q4-Oct-Dec",
   ];
   return sprints[Math.floor(Math.random() * sprints.length)];
 }

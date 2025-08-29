@@ -6,7 +6,7 @@ Field Type: Short text
 Required: Yes
 Placeholder: "e.g., John Smith"
 
-Question 2: Short Text
+Question 2: Multiple choice (single selection)
 Question: "Which sprint are you providing feedback for?"
 
 Field Type: Short text
