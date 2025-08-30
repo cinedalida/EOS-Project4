@@ -43,7 +43,6 @@ function getRandomImprovementFeedback() {
     "Would appreciate more real-world case studies to understand practical applications.",
     "Perhaps consider smaller group sizes for more personalized attention.",
     "More frequent breaks would help maintain focus during longer sessions.",
-    "", // Sometimes no improvement feedback
   ];
   return feedback[Math.floor(Math.random() * feedback.length)];
 }
@@ -82,7 +81,7 @@ async function fillTypeformResponse() {
 async function fillCurrentQuestion() {
   console.log("🔍 Analyzing current question...");
 
-  // 1. Check for text input (Name or Sprint name questions)
+  // 1. Check for text input-Q1
   const textInput =
     document.querySelector('input[class*="InputField"]') ||
     document.querySelector('input[type="text"]');
@@ -94,11 +93,7 @@ async function fillCurrentQuestion() {
     if (questionText.includes("name")) {
       textInput.value = getRandomName();
       console.log("✓ Name filled:", textInput.value);
-    } else if (questionText.includes("sprint")) {
-      textInput.value = getRandomSprintName();
-      console.log("✓ Sprint name filled:", textInput.value);
     } else {
-      // Default to name if unclear
       textInput.value = getRandomName();
       console.log("✓ Text field filled:", textInput.value);
     }
@@ -112,7 +107,7 @@ async function fillCurrentQuestion() {
     return;
   }
 
-  // 2. Check for rating/opinion scale (buttons with numbers or rating options)
+  // 2. Check for rating/opinion scale - Q2-Q5 (buttons with numbers or rating options)
   const ratingButtons = document.querySelectorAll(
     'button[data-testid*="button"], button[class*="Button"], button:not([class*="ImageTooltip"])'
   );
@@ -148,7 +143,7 @@ async function fillCurrentQuestion() {
     }
   }
 
-  // 3. Check for textarea (feedback questions)
+  // 3. Check for textarea - Q6, Q7, Q9 (feedback questions)
   const textarea = document.querySelector("textarea");
   if (textarea) {
     const questionText = document.body.innerText.toLowerCase();
@@ -175,7 +170,7 @@ async function fillCurrentQuestion() {
     return;
   }
 
-  // 4. Check for multiple choice options (including Sprint selection)
+  // 4. Check for multiple choice options - Q8
   const choiceButtons = document.querySelectorAll(
     'button[role="button"], div[role="button"], button:not([class*="ImageTooltip"])'
   );
@@ -183,36 +178,13 @@ async function fillCurrentQuestion() {
     const validChoices = Array.from(choiceButtons).filter(
       (btn) =>
         !btn.classList.toString().includes("ImageTooltip") &&
-        btn.offsetHeight > 20 && // Reasonable size
+        btn.offsetHeight > 20 &&
         btn.textContent.trim().length > 0
     );
 
     if (validChoices.length >= 3) {
       const questionText = document.body.innerText.toLowerCase();
 
-      // Check if this is the sprint selection question
-      if (questionText.includes("sprint")) {
-        // Look for buttons containing sprint options
-        const sprintButtons = validChoices.filter(
-          (btn) =>
-            btn.textContent.includes("Sprint 2025") ||
-            btn.textContent.includes("Q1") ||
-            btn.textContent.includes("Q2") ||
-            btn.textContent.includes("Q3") ||
-            btn.textContent.includes("Q4")
-        );
-
-        if (sprintButtons.length > 0) {
-          const randomSprint =
-            sprintButtons[Math.floor(Math.random() * sprintButtons.length)];
-          randomSprint.click();
-          console.log("✓ Sprint selected:", randomSprint.textContent.trim());
-          await wait(1500);
-          return;
-        }
-      }
-
-      // Handle other multiple choice questions (like learning format)
       const randomChoice =
         validChoices[Math.floor(Math.random() * validChoices.length)];
       randomChoice.click();
@@ -228,9 +200,15 @@ async function fillCurrentQuestion() {
   // 5. Check if we're at the end (Submit button)
   const submitButton =
     document.querySelector('button[type="submit"]') ||
-    Array.from(document.querySelectorAll("button")).find((btn) =>
-      btn.textContent.toLowerCase().includes("submit")
-    );
+    Array.from(document.querySelectorAll("button")).find((btn) => {
+      const text = btn.textContent.toLowerCase();
+      return (
+        text.includes("submit") ||
+        text.includes("send") ||
+        text.includes("done") ||
+        text.includes("finish")
+      );
+    });
 
   if (submitButton) {
     submitButton.click();
@@ -255,27 +233,22 @@ async function fillCurrentQuestion() {
 async function clickNextButton() {
   const nextSelectors = [
     'button[data-qa="next-button"]',
-    'button:contains("Next")',
-    'button:contains("OK")',
-    'button:contains("Continue")',
     'button[type="button"]',
   ];
 
-  // Try CSS selectors first
+  // Try strict CSS selectors first
   for (let selector of nextSelectors) {
-    try {
-      const button = document.querySelector(selector);
-      if (button && button.offsetHeight > 0) {
-        button.click();
-        console.log("✓ Next button clicked");
-        await wait(2000);
-        setTimeout(fillCurrentQuestion, 2000); // Continue to next question
-        return;
-      }
-    } catch (e) {} // Ignore errors with :contains selector
+    const button = document.querySelector(selector);
+    if (button && button.offsetHeight > 0) {
+      button.click();
+      console.log("✓ Next button clicked (by selector)");
+      await wait(2000);
+      setTimeout(fillCurrentQuestion, 2000);
+      return;
+    }
   }
 
-  // Fallback: find any button that looks like "Next"
+  // Fallback: scan all visible buttons by text
   const allButtons = document.querySelectorAll("button");
   const nextButton = Array.from(allButtons).find((btn) => {
     const text = btn.textContent.toLowerCase().trim();
@@ -291,7 +264,7 @@ async function clickNextButton() {
 
   if (nextButton) {
     nextButton.click();
-    console.log("✓ Next button clicked (fallback)");
+    console.log("✓ Next button clicked (by text fallback)");
     await wait(2000);
     setTimeout(fillCurrentQuestion, 2000);
   } else {
