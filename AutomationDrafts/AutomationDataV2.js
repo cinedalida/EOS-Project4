@@ -63,7 +63,7 @@ async function fillTypeformResponse() {
     console.log(`📝 Starting response ${responseCount + 1}...`);
 
     // Wait for page to fully load
-    await wait(2000);
+    await wait(5000);
 
     // Since Typeform shows one question at a time, we need to handle each step
     await fillCurrentQuestion();
@@ -73,104 +73,115 @@ async function fillTypeformResponse() {
     setTimeout(() => {
       window.location.reload();
       setTimeout(fillTypeformResponse, 3000);
-    }, 2000);
+    }, 5000);
   }
 }
 
 // Handle filling the current visible question
+// Fixed text input handler - paste this in console
 async function fillCurrentQuestion() {
   console.log("🔍 Analyzing current question...");
 
-  // 1. Check for text input-Q1
+  // 1. Check for text input with better handling
   const textInput =
     document.querySelector('input[class*="InputField"]') ||
     document.querySelector('input[type="text"]');
 
   if (textInput) {
-    // Determine if it's name or sprint field based on question text
     const questionText = document.body.innerText.toLowerCase();
+    let answer = getRandomName();
 
-    if (questionText.includes("name")) {
-      textInput.value = getRandomName();
-      console.log("✓ Name filled:", textInput.value);
-    } else {
-      textInput.value = getRandomName();
-      console.log("✓ Text field filled:", textInput.value);
+    console.log("✓ Filling text field with:", answer);
+
+    // ENHANCED text input simulation
+    textInput.focus();
+
+    // Clear existing value first
+    textInput.value = "";
+
+    // Simulate typing character by character (more realistic)
+    for (let i = 0; i < answer.length; i++) {
+      textInput.value += answer[i];
+      textInput.dispatchEvent(new Event("input", { bubbles: true }));
+      await wait(50); // Small delay between characters
     }
 
-    textInput.dispatchEvent(new Event("input", { bubbles: true }));
+    // Final events to ensure Typeform recognizes the input
     textInput.dispatchEvent(new Event("change", { bubbles: true }));
-    await wait(1000);
+    textInput.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Enter", bubbles: true })
+    );
+    textInput.dispatchEvent(new Event("blur", { bubbles: true }));
 
-    // Click Next/OK button after filling text
-    await clickNextButton();
-    return;
+    await wait(1500);
+
+    // Check if we can proceed (look for enabled OK/Next button)
+    const okButton = document.querySelector("button");
+    if (okButton && !okButton.disabled) {
+      okButton.click();
+      console.log("✓ OK button clicked");
+      await wait(5000);
+      setTimeout(fillCurrentQuestion, 5000);
+      return;
+    } else {
+      console.log("⚠️ OK button not enabled, trying again...");
+      await wait(1000);
+      // Try pressing Enter as alternative
+      textInput.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key: "Enter",
+          keyCode: 13,
+          bubbles: true,
+        })
+      );
+      await wait(5000);
+      setTimeout(fillCurrentQuestion, 5000);
+      return;
+    }
   }
 
-  // 2. Check for rating/opinion scale - Q2-Q5 (buttons with numbers or rating options)
+  // Rest of the function stays the same...
+  // (rating, textarea, multiple choice, submit logic)
+
+  // 2. Rating buttons
   const ratingButtons = document.querySelectorAll(
     'button[data-testid*="button"], button[class*="Button"], button:not([class*="ImageTooltip"])'
   );
-
   if (ratingButtons.length >= 3) {
-    // Likely rating scale
-    // Filter out non-rating buttons
     const validRatingButtons = Array.from(ratingButtons).filter(
       (btn) =>
         !btn.classList.toString().includes("ImageTooltip") &&
-        btn.offsetHeight > 0 && // Visible
+        btn.offsetHeight > 0 &&
         btn.offsetWidth > 0
     );
 
     if (validRatingButtons.length >= 3) {
       const rating = getRandomRating();
       const buttonIndex = Math.min(rating - 1, validRatingButtons.length - 1);
-      const selectedButton = validRatingButtons[buttonIndex];
-
-      selectedButton.click();
-      console.log(`✓ Rating ${rating} selected (button ${buttonIndex})`);
-      await wait(1500);
-
-      // Auto-advance might happen, or we need to click next
-      await wait(2000);
-      const stillOnSamePage = document.querySelector(
-        'button[data-testid*="button"]'
-      );
-      if (stillOnSamePage) {
-        await clickNextButton();
-      }
+      validRatingButtons[buttonIndex].click();
+      console.log(`✓ Rating ${rating} selected`);
+      await wait(5000);
+      setTimeout(fillCurrentQuestion, 5000);
       return;
     }
   }
 
-  // 3. Check for textarea - Q6, Q7, Q9 (feedback questions)
+  // 3. Textarea
   const textarea = document.querySelector("textarea");
   if (textarea) {
     const questionText = document.body.innerText.toLowerCase();
-
     if (questionText.includes("enjoy") || questionText.includes("positive")) {
       textarea.value = getRandomPositiveFeedback();
-      console.log("✓ Positive feedback filled");
-    } else if (
-      questionText.includes("improve") ||
-      questionText.includes("better")
-    ) {
-      textarea.value = getRandomImprovementFeedback();
-      console.log("✓ Improvement feedback filled");
     } else {
-      textarea.value = getRandomPositiveFeedback(); // Default
-      console.log("✓ Feedback filled");
+      textarea.value = getRandomImprovementFeedback();
     }
-
     textarea.dispatchEvent(new Event("input", { bubbles: true }));
-    textarea.dispatchEvent(new Event("change", { bubbles: true }));
     await wait(1000);
-
     await clickNextButton();
     return;
   }
 
-  // 4. Check for multiple choice options - Q8
+  // 4. Multiple choice
   const choiceButtons = document.querySelectorAll(
     'button[role="button"], div[role="button"], button:not([class*="ImageTooltip"])'
   );
@@ -183,8 +194,6 @@ async function fillCurrentQuestion() {
     );
 
     if (validChoices.length >= 3) {
-      const questionText = document.body.innerText.toLowerCase();
-
       const randomChoice =
         validChoices[Math.floor(Math.random() * validChoices.length)];
       randomChoice.click();
@@ -197,7 +206,7 @@ async function fillCurrentQuestion() {
     }
   }
 
-  // 5. Check if we're at the end (Submit button)
+  // 5. Submit
   const submitButton =
     document.querySelector('button[type="submit"]') ||
     Array.from(document.querySelectorAll("button")).find((btn) => {
@@ -205,8 +214,7 @@ async function fillCurrentQuestion() {
       return (
         text.includes("submit") ||
         text.includes("send") ||
-        text.includes("done") ||
-        text.includes("finish")
+        text.includes("done")
       );
     });
 
@@ -214,20 +222,20 @@ async function fillCurrentQuestion() {
     submitButton.click();
     console.log(`✅ Response ${responseCount + 1} SUBMITTED!`);
     responseCount++;
-
-    // Wait and start new response
-    await wait(4000);
     if (responseCount < maxResponses) {
-      console.log(`🔄 Starting response ${responseCount + 1}...`);
+      await wait(4000);
       window.location.reload();
       setTimeout(fillTypeformResponse, 4000);
     }
     return;
   }
 
-  // If we get here, try to find any "Next" button
-  await clickNextButton();
+  console.log("⚠️ No action taken, retrying...");
+  setTimeout(fillCurrentQuestion, 5000);
 }
+
+// If we get here, try to find any "Next" button
+await clickNextButton();
 
 // Helper function to find and click Next/Continue/OK buttons
 async function clickNextButton() {
@@ -242,8 +250,8 @@ async function clickNextButton() {
     if (button && button.offsetHeight > 0) {
       button.click();
       console.log("✓ Next button clicked (by selector)");
-      await wait(2000);
-      setTimeout(fillCurrentQuestion, 2000);
+      await wait(5000);
+      setTimeout(fillCurrentQuestion, 5000);
       return;
     }
   }
@@ -262,16 +270,16 @@ async function clickNextButton() {
     );
   });
 
+  // ✅ FIX: You forgot to actually click the fallback button
   if (nextButton) {
     nextButton.click();
     console.log("✓ Next button clicked (by text fallback)");
-    await wait(2000);
-    setTimeout(fillCurrentQuestion, 2000);
-  } else {
-    console.log("⚠️ No Next button found, waiting...");
-    await wait(2000);
-    setTimeout(fillCurrentQuestion, 2000);
+    await wait(5000);
+    setTimeout(fillCurrentQuestion, 5000);
+    return;
   }
+
+  console.warn("⚠ No Next button found!");
 }
 
 // Helper function to inspect current form state
@@ -293,4 +301,4 @@ console.log("");
 inspectCurrentForm();
 
 // Start filling after inspection
-setTimeout(fillTypeformResponse, 2000);
+setTimeout(fillTypeformResponse, 5000);
