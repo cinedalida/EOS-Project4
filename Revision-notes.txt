@@ -1,6 +1,7 @@
 Automation needs:
 - to look for SUBMIT button after 10 questions
 - needs to rerun every after accomplishment messeges (weird)
+- Delete "enter eos." -> make survey forms specific
 
 Typeform:
 - adjust the Q2 to multiple choice for errors

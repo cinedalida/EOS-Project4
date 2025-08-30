@@ -6,14 +6,7 @@ Field Type: Short text
 Required: Yes
 Placeholder: "e.g., John Smith"
 
-Question 2: Multiple choice (single selection)
-Question: "Which sprint are you providing feedback for?"
-
-Field Type: Short text
-Required: Yes
-Placeholder: "e.g., Sprint 2024-Q1-Week1"
-
-Question 3: Opinion Scale (1-5)
+Question 2: Opinion Scale (1-5)
 Question: "Overall, how would you rate this sprint?"
 
 Field Type: Opinion Scale
@@ -21,7 +14,7 @@ Scale: 1 to 5
 Labels: 1 = Poor, 5 = Excellent
 Required: Yes
 
-Question 4: Opinion Scale (1-5)
+Question 3: Opinion Scale (1-5)
 Question: "How engaged did you feel during this sprint?"
 
 Field Type: Opinion Scale
@@ -29,7 +22,7 @@ Scale: 1 to 5
 Labels: 1 = Not engaged, 5 = Very engaged
 Required: Yes
 
-Question 5: Opinion Scale (1-5)
+Question 4: Opinion Scale (1-5)
 Question: "How would you rate the difficulty level?"
 
 Field Type: Opinion Scale
@@ -37,7 +30,7 @@ Scale: 1 to 5
 Labels: 1 = Too easy, 5 = Too difficult
 Required: Yes
 
-Question 6: Opinion Scale (1-5)
+Question 5: Opinion Scale (1-5)
 Question: "How likely are you to recommend this sprint format to others?"
 
 Field Type: Opinion Scale
@@ -45,21 +38,21 @@ Scale: 1 to 5
 Labels: 1 = Not likely, 5 = Very likely
 Required: Yes
 
-Question 7: Long Text
+Question 6: Long Text
 Question: "What did you enjoy most about this sprint? Please provide specific details."
 
 Field Type: Long text
 Required: Yes
 Placeholder: "Share your positive experiences, key learnings, or highlights..."
 
-Question 8: Long Text
+Question 7: Long Text
 Question: "What areas need improvement? Please provide constructive feedback."
 
 Field Type: Long text
-Required: No
+Required: Yes
 Placeholder: "Suggest improvements for content, pace, format, or delivery..."
 
-Question 9: Multiple Choice
+Question 8: Multiple Choice
 Question: "Which learning format was most effective for you?"
 
 Field Type: Multiple choice (single selection)
@@ -74,9 +67,9 @@ Independent study
 
 Required: Yes
 
-Question 10: Long Text
+Question 9: Long Text
 Question: "Any additional comments or suggestions?"
 
 Field Type: Long text
-Required: No
+Required: Yes
 Placeholder: "Share any other thoughts, ideas, or feedback..."
