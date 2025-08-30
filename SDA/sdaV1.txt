@@ -1,0 +1,83 @@
+Sprint Data Automation - Context & Overview
+
+What This Automation Does:
+This Google Apps Script automatically connects to your Typeform surveys, 
+fetches all response data, and transforms it into organized, actionable insights in Google Sheets. 
+It eliminates manual data export/import processes and creates a centralized dashboard for tracking 
+sprint feedback across multiple iterations.
+
+What It Creates:
+
+Raw Data Sheet: Complete backup of all Typeform responses with full API data
+Processed Data Sheet: Clean, normalized data with dynamic columns matching your form questions
+Dashboard: Real-time summary statistics including total responses, completion rates, and date ranges
+Mega Dataset: Aggregated cross-sprint data for longitudinal analysis
+Custom Menu: One-click interface for data updates and report generation
+
+What It Generates:
+
+Automated daily data sync from Typeform API
+Dynamic reports adapting to your form structure
+Key performance metrics (response rates, completion statistics)
+Historical trend analysis across multiple sprints
+Error handling and connection monitoring
+
+Business Value & Usefulness:
+
+Time Savings: Eliminates manual data export/import (saves 15-30 minutes per sprint)
+Real-Time Insights: Always current data without manual updates
+Scalability: Handles growing response volumes automatically
+Data Integrity: Consistent formatting and no human export errors
+Historical Analysis: Built-in cross-sprint comparison capabilities
+Accessibility: Team members can access latest data anytime via Google Sheets
+Automation: Set-and-forget daily updates with error notifications
+
+==================================================================
+
+🎯 Current Scope: Single Survey Focus
+Yes, the current automation is designed for ONE Typeform survey at a time.
+Here's what it does:
+javascriptconst CONFIG = {
+  FORM_ID: 'YOUR_FORM_ID_HERE',  // ← ONE specific form
+  // ...
+};
+
+✅ Connects to one specific Typeform (defined by FORM_ID)
+✅ Fetches all responses from that single survey
+✅ Creates sheets for that one survey's data
+
+📊 What "Mega Dataset" Actually Means
+
+Different runs/iterations of the same survey
+Historical data from the same form over time
+NOT data from multiple different surveys
+
+🔄 Multi-Survey Limitations
+What it CAN'T do currently:
+
+❌ Pull from multiple different Typeform surveys simultaneously
+❌ Combine data from different forms with different questions
+❌ Switch between different surveys automatically
+
+
+==================================================================
+
+In Progress
+
+Multi-Survey Expansion Options
+
+Option 1: Multiple Configurations (Simple)
+javascriptconst SURVEYS = {
+  SPRINT_FEEDBACK: { token: 'xxx', formId: 'abc123' },
+  ONBOARDING: { token: 'xxx', formId: 'def456' },
+  EXIT_INTERVIEW: { token: 'xxx', formId: 'ghi789' }
+};
+Option 2: Survey Selector Menu
+
+Add dropdown menu to choose which survey to process
+Each survey gets its own set of sheets
+
+Option 3: Multi-Survey Dashboard
+
+Combine data from related surveys
+Cross-survey analytics and comparisons
